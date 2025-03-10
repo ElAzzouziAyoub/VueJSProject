@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="utf-8">
+    <title>Les Bonnes Pièces</title>
+    <link rel="stylesheet" href="style.css">
+    <script src="https://unpkg.com/vue@latest"></script>
+    <script defer src="app.js"></script>
+</head>
+<body>
+    <div id="app">
+        <header>
+            <img src="/images/logo.jpeg" alt="LOGO" >
+            <h1>Les Bonnes Pièces</h1>
+            <button @click="togglePanier">Afficher le panier ({{ panier.length }})</button>
+        </header>
+
+        <!-- Message temporaire -->
+        <p v-if="message" class="message">{{ message }}</p>
+
+        <!-- Section Panier -->
+        <section v-if="afficherPanier" class="panier">
+            <h2>Panier</h2>
+            <ul>
+                <li v-for="(piece, index) in panier" :key="index">
+                    {{ piece.nom }} - {{ piece.prix }} €
+                </li>
+            </ul>
+            <p v-if="panier.length === 0">Votre panier est vide.</p>
+        </section>
+
+        <main>
+            <!-- Filtres -->
+            <section class="filtres">
+                <h3>Filtres</h3>
+                <input type="text" v-model="searchQuery" placeholder="Rechercher une pièce">
+                <select v-model="selectedCategory">
+                    <option value="">Toutes les catégories</option>
+                    <option v-for="cat in categories" :key="cat" :value="cat">{{ cat }}</option>
+                </select>
+                <label>
+                    <input type="checkbox" v-model="showOnlyAvailable"> Afficher seulement les pièces disponibles
+                </label>
+                <button @click="sortByPriceAsc">Trier par prix croissant</button>
+                <button @click="sortByPriceDesc">Trier par prix décroissant</button>
+            </section>
+
+            <!-- Fiches produits -->
+            <section class="fiches">
+                <div v-for="piece in filteredPieces" :key="piece.id" class="fiche">
+                    <img :src="piece.image" :alt="piece.nom" @error="piece.image='images/default.jpg'">
+                    <h4>{{ piece.nom }}</h4>
+                    <p>Prix: {{ piece.prix }} €</p>
+                    <p>Catégorie: {{ piece.categorie }}</p>
+                    <p v-if="piece.disponible">En stock</p>
+                    <p v-else style="color: red;">Rupture de stock</p>
+                    <button @click="ajouterAuPanier(piece)" :disabled="!piece.disponible">
+						Ajouter au panier
+					</button>
+					
+                </div>
+            </section>
+        </main>
+    </div>
+</body>
+</html>
